@@ -1,0 +1,57 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1 style="margin: 10px;">All Posts</h1>
+    {% if user.is_authenticated %}
+        <div style="margin: 15px;" class="list-group-item">
+            <h3>New Post</h3>
+            <form method="post">
+                {% csrf_token %}
+                <textarea name="new_post"></textarea><br>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block posts %}
+    {% for post in page_obj %}
+        <div style="margin: 15px;" class="list-group-item post-div">
+            <a href="{% url 'profile' post.user.id %}"><p><b>{{ post.user }}</b></p></a>
+            {% if post.user == user %}
+                <p><a href="{% url 'edit' post.id %}">Edit</a></p>
+            {% endif %}
+            <p>{{ post.text }}</p>
+            <p>{{ post.date }}</p>
+            <p class="likes {{post.id}}">Likes: {{post.likes.all.count}}</p>
+            {% if user.is_authenticated %}
+                {% if post in posts_likes %}
+                    <button class="btn btn-danger like {{post.id}}">UnLike</button>
+                {% else %}
+                    <button class="btn btn-primary like {{post.id}}">Like</button>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}"><button class="btn btn-primary">Like</button></a>
+            {% endif %}          
+        </div>
+    {% endfor %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1"><button class="btn btn-primary">&laquo; first</button></a>
+                <a href="?page={{ page_obj.previous_page_number }}"><button class="btn btn-primary">previous</button></a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><button class="btn btn-primary">next</button></a>
+                <a href="?page={{ page_obj.paginator.num_pages }}"><button class="btn btn-primary">last &raquo;</button></a>
+            {% endif %}
+        </span>
+    </div>
+    <script src="/static/network/scripts.js">
+    </script>
+{% endblock %}

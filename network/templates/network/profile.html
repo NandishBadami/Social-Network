@@ -1,0 +1,21 @@
+{% extends 'network/index.html' %}
+
+{% block body %}
+    <h1>{{post_user}}</h1>
+    <p>Followers: {{ followers }}</p>
+    <p>Following: {{ followings }}</p>
+    {% if user.is_authenticated %}
+    {% if user != post_user %}
+    <form method="post">
+        {% csrf_token %}
+        {% if following %}
+        <button type="submit" class="btn btn-danger">UnFollow</button>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Follow</button>
+        {% endif %}
+    </form>
+    {% endif %}
+    {% else %}
+    <a href="{% url 'login' %}"><button class="btn btn-primary">Follow</button></a>
+    {% endif %}
+{% endblock %}
